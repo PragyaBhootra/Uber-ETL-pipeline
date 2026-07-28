@@ -1,0 +1,26 @@
+name: Uber ETL (R2 -> MotherDuck)
+
+on:
+  workflow_dispatch: {}     # lets you click "Run workflow" manually in the Actions tab
+  schedule:
+    - cron: "0 6 * * 1"     # every Monday 06:00 UTC — edit or remove as you like
+
+jobs:
+  run-etl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pandas duckdb
+
+      - name: Run ETL pipeline
+        env:
+          MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
+        run: python etl_cloud.py
